@@ -26,10 +26,6 @@
 	path = src/lib/DriverFramework
 	url = https://github.com/PX4/DriverFramework.git
 	branch = master
-[submodule "src/lib/ecl"]
-	path = src/lib/ecl
-	url = https://github.com/PX4/ecl.git
-	branch = master
 [submodule "cmake/cmake_hexagon"]
 	path = cmake/cmake_hexagon
 	url = https://github.com/ATLFlight/cmake_hexagon.git
@@ -57,3 +53,6 @@
 [submodule "Tools/sitl_gazebo"]
 	path = Tools/sitl_gazebo
 	url = git@github.com:TokyoClod/sitl_gazebo.git
+[submodule "src/lib/ecl"]
+	path = src/lib/ecl
+	url = git@github.com:TokyoClod/ecl.git
