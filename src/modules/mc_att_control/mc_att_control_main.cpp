@@ -388,7 +388,7 @@ MulticopterAttitudeControl::control_attitude(float dt)
 	/* calculate reduced desired attitude neglecting vehicle's yaw to prioritize roll and pitch */
 	Vector3f e_z = q.dcm_z(); //由四元数q计算出相应的旋转矩阵R的最后一列
 	Vector3f e_z_d = qd.dcm_z();
-	Quatf qd_red(e_z, e_z_d);
+	Quatf qd_red(e_z, e_z_d); // Generates shortest rotation from source to destination vector
 
 	if (abs(qd_red(1)) > (1.f - 1e-5f) || abs(qd_red(2)) > (1.f - 1e-5f)) {
 		/* In the infinitesimal corner case where the vehicle and thrust have the completely opposite direction,
@@ -417,7 +417,7 @@ MulticopterAttitudeControl::control_attitude(float dt)
 	Vector3f eq = 2.f * math::signNoZero(qe(0)) * qe.imag();
 
 	/* calculate angular rates setpoint */
-	_rates_sp = eq.emult(attitude_gain);
+	_rates_sp = eq.emult(attitude_gain); //P 控制
 
 	/* Feed forward the yaw setpoint rate. We need to apply the yaw rate in the body frame.
 	 * We infer the body z axis by taking the last column of R.transposed (== q.inversed)
