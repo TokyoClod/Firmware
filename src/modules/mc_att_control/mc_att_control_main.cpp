@@ -386,7 +386,7 @@ MulticopterAttitudeControl::control_attitude(float dt)
 	qd.normalize();
 
 	/* calculate reduced desired attitude neglecting vehicle's yaw to prioritize roll and pitch */
-	Vector3f e_z = q.dcm_z();
+	Vector3f e_z = q.dcm_z(); //由四元数q计算出相应的旋转矩阵R的最后一列
 	Vector3f e_z_d = qd.dcm_z();
 	Quatf qd_red(e_z, e_z_d);
 
@@ -591,7 +591,7 @@ MulticopterAttitudeControl::run()
 	 * do subscriptions
 	 */
 	_v_att_sub = orb_subscribe(ORB_ID(vehicle_attitude));
-	_v_att_sp_sub = orb_subscribe(ORB_ID(vehicle_attitude_setpoint));
+	_v_att_sp_sub = orb_subscribe(ORB_ID(vehicle_attitude_setpoint));// 主要的数据输入
 	_v_rates_sp_sub = orb_subscribe(ORB_ID(vehicle_rates_setpoint));
 	_v_control_mode_sub = orb_subscribe(ORB_ID(vehicle_control_mode));
 	_params_sub = orb_subscribe(ORB_ID(parameter_update));
@@ -624,16 +624,16 @@ MulticopterAttitudeControl::run()
 
 	while (!should_exit()) {
 
-		poll_fds.fd = _sensor_gyro_sub[_selected_gyro];
-
+		poll_fds.fd = _sensor_gyro_sub[_sensor_gyro_sub[_selected_gyro];
+		
 		/* wait for up to 100ms for data */
-		int pret = px4_poll(&poll_fds, 1, 100);
+		int pret = px4_poll(&poll_fds, 1, 100);//监测多个等待事件
 
 		/* timed out - periodic check for should_exit() */
 		if (pret == 0) {
-			continue;
+			continue;   //poll()函数会阻塞 timeout 所指定的毫秒时间长度之后返回
 		}
-
+		
 		/* this is undesirable but not much we can do - might want to flag unhappy status */
 		if (pret < 0) {
 			PX4_ERR("poll error %d, %d", pret, errno);
@@ -660,7 +660,7 @@ MulticopterAttitudeControl::run()
 
 			/* copy gyro data */
 			orb_copy(ORB_ID(sensor_gyro), _sensor_gyro_sub[_selected_gyro], &_sensor_gyro);
-
+			// 检测到数据发生改变时,copy 出数据
 			/* check for updates in other topics */
 			parameter_update_poll();
 			vehicle_control_mode_poll();
@@ -683,7 +683,7 @@ MulticopterAttitudeControl::run()
 			}
 
 			if (_v_control_mode.flag_control_attitude_enabled) {
-
+				//自动控制下的姿态外环
 				control_attitude(dt);
 
 				/* publish attitude rates setpoint */
@@ -700,7 +700,7 @@ MulticopterAttitudeControl::run()
 					_v_rates_sp_pub = orb_advertise(_rates_sp_id, &_v_rates_sp);
 				}
 
-			} else {
+			} else { //手动控制下的外环
 				/* attitude controller disabled, poll rates setpoint topic */
 				if (_v_control_mode.flag_control_manual_enabled) {
 					/* manual rates control - ACRO mode */
@@ -761,7 +761,7 @@ MulticopterAttitudeControl::run()
 						perf_end(_controller_latency_perf);
 
 					} else if (_actuators_id) {
-						_actuators_0_pub = orb_advertise(_actuators_id, &_actuators);
+						_actuators_0_pub = orb_advertise(_actuators_id, &_actuators);  //主要的输出量
 					}
 
 				}
