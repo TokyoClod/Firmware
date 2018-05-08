@@ -624,7 +624,7 @@ MulticopterAttitudeControl::run()
 
 	while (!should_exit()) {
 
-		poll_fds.fd = _sensor_gyro_sub[_sensor_gyro_sub[_selected_gyro];
+		poll_fds.fd = _sensor_gyro_sub[_sensor_gyro_sub[_selected_gyro]];
 		
 		/* wait for up to 100ms for data */
 		int pret = px4_poll(&poll_fds, 1, 100);//监测多个等待事件
